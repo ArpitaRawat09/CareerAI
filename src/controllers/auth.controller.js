@@ -1,6 +1,7 @@
 const userModel = require("../models/user.model.js");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const redis = require("../config/redis.js");
 
 async function registerUser(req, res) {
   const { username, email, password } = req.body;
@@ -73,7 +74,34 @@ async function loginUser(req, res) {
   });
 }
 
+async function logoutUser(req, res) {
+  try {
+    const token = req.cookies.token;
+
+    if (token) {
+      await redis.set(`blacklist_${token}`, true, "EX", 26 * 60 * 60);
+    }
+
+    // Blacklist the token in Redis
+
+    // Set expiry to 26 hours to cover token validity and some buffer time
+
+    // Clear the cookie
+    res.cookie("token", "", {
+      httpOnly: true,
+      secure: true,
+      maxAge: 0,
+    });
+
+    return res.status(200).json({ message: "Logout successful" });
+  } catch (error) {
+    console.log("logoutUser error ", error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+}
+
 module.exports = {
   registerUser,
   loginUser,
+  logoutUser,
 };
