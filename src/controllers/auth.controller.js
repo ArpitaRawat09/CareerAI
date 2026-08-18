@@ -3,6 +3,12 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const redis = require("../config/redis.js");
 
+/**
+ * @name registerUserController
+ * @desc register a new user and expects username, email and password in the request body
+ * @access Public
+ */
+
 async function registerUser(req, res) {
   const { username, email, password } = req.body;
 
@@ -15,7 +21,12 @@ async function registerUser(req, res) {
   });
 
   if (isUserAlreadyExists) {
-    return res.status(400).json({ message: "User already exists" });
+    if (isUserAlreadyExists.username === username) {
+      return res.status(400).json({ message: "Username already exists" });
+    }
+    return res
+      .status(400)
+      .json({ message: "Account with this email already exists" });
   }
 
   const hashedPassword = await bcrypt.hash(password, 10);
@@ -39,6 +50,12 @@ async function registerUser(req, res) {
     },
   });
 }
+
+/**
+ * @name loginUserController
+ * @desc login a user and expects email and password in the request body
+ * @access Public
+ */
 
 async function loginUser(req, res) {
   const { email, password } = req.body;
@@ -74,28 +91,29 @@ async function loginUser(req, res) {
   });
 }
 
+/**
+ * @name logoutUserController
+ * @desc logout a user and expects token in the request cookies and adds the token to the blacklist in Redis
+ * @access Public
+ */
+
 async function logoutUser(req, res) {
   try {
-    const token = req.cookies.token;
+    const token = req.cookies?.token;
 
     if (token) {
-      await redis.set(`blacklist_${token}`, true, "EX", 26 * 60 * 60);
+      // Add the token to the blacklist in Redis with an expiration time of 26 hours
+      await redis.set(`blacklist_${token}`, "true", "EX", 26 * 60 * 60);
     }
 
-    // Blacklist the token in Redis
-
-    // Set expiry to 26 hours to cover token validity and some buffer time
-
     // Clear the cookie
-    res.cookie("token", "", {
+    res.clearCookie("token", {
       httpOnly: true,
       secure: true,
-      maxAge: 0,
     });
 
-    return res.status(200).json({ message: "Logout successful" });
+    return res.status(200).json({ message: "User logged out successfully" });
   } catch (error) {
-    console.log("logoutUser error ", error);
     return res.status(500).json({ message: "Internal server error" });
   }
 }
