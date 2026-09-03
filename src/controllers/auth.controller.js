@@ -118,6 +118,13 @@ async function logoutUser(req, res) {
   }
 }
 
+/**
+ * @name getMeController
+ * @desc get the current user's information
+ * @access Private
+ */
+
+
 async function getMeController(req, res) {
   const user = await userModel.findById(req.user.id);
 
