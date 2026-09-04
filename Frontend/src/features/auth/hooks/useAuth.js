@@ -10,7 +10,7 @@ export const useAuth = () => {
   const handleLogin = async ({ email, password }) => {
     setLoading(true);
     try {
-      const data = await login({ email, password });
+      const data = await login({ username , email, password });
       setUser(data.user);
     } catch (err) {
     } finally {

@@ -4,6 +4,7 @@ import "../auth.form.scss";
 import { useAuth } from "../hooks/useAuth";
 
 const Login = () => {
+  const navigate = useNavigate();
   const { loading, handleLogin } = useAuth();
 
   const [email, setEmail] = useState("");
@@ -13,6 +14,7 @@ const Login = () => {
     e.preventDefault();
     handleLogin({ email, password });
     // Handle form submission logic here
+    navigate("/");
   };
 
   if (loading) {
