@@ -1,7 +1,7 @@
-const userModel = require("../models/user.model.js");
-const bcrypt = require("bcryptjs");
-const jwt = require("jsonwebtoken");
-const redis = require("../config/redis.js");
+import userModel from "../models/user.model.js";
+import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
+import redis from "../config/redis.js";
 
 /**
  * @name registerUserController
@@ -149,7 +149,7 @@ async function getMeController(req, res) {
   });
 }
 
-module.exports = {
+export {
   registerUser,
   loginUser,
   logoutUser,
