@@ -12,8 +12,7 @@ const Login = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    handleLogin({ email, password });
-    // Handle form submission logic here
+    await handleLogin({ email, password });
     navigate("/");
   };
 
@@ -32,9 +31,10 @@ const Login = () => {
           <div className="input-group">
             <label htmlFor="email">Email</label>
             <input
-              onClick={(e) => {
+              onChange={(e) => {
                 setEmail(e.target.value);
               }}
+              value={email}
               type="email"
               id="email"
               name="email"
@@ -45,9 +45,10 @@ const Login = () => {
           <div className="input-group">
             <label htmlFor="password">Password</label>
             <input
-              onClick={(e) => {
+              onChange={(e) => {
                 setPassword(e.target.value);
               }}
+              value={password}
               type="password"
               id="password"
               name="password"
