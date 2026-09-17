@@ -8,14 +8,14 @@ async function generateInterviewReportController(req, res) {
   const { selfDescrption, jobDescription } = req.body;
 
   const interReportByAi = await generateInterviewReport({
-    resume: resumeContent,
+    resume: resumeContent.text,
     selfDescrption,
     jobDescription,
   });
 
   const interviewReport = {
     user: req.user._id,
-    resume: resumeContent,
+    resume: resumeContent.text,
     selfDescrption,
     jobDescription,
     ...interReportByAi,
