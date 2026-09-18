@@ -1,26 +1,38 @@
 const pdfParse = require("pdf-parse");
-const generateInterviewReport = require("../service/ai.service.js");
+const path = require("path");
+const { pathToFileURL } = require("url");
+const { generateInterviewReport } = require("../service/ai.service.js");
+
+const standardFontDataUrl = pathToFileURL(
+  path.join(path.dirname(require.resolve("pdfjs-dist")), "../standard_fonts/"),
+).href;
 
 async function generateInterviewReportController(req, res) {
-  const resumeContent = await new pdfParse.PDFParse(
-    Uint8Array.from(req.file.buffer),
-  ).getText();
-  const { selfDescrption, jobDescription } = req.body;
+  const parser = new pdfParse.PDFParse({
+    data: Uint8Array.from(req.file.buffer),
+    standardFontDataUrl,
+  });
+  const resumeContent = await parser.getText();
+  await parser.destroy();
+  const { selfDescription, jobDescription } = req.body;
 
   const interReportByAi = await generateInterviewReport({
     resume: resumeContent.text,
-    selfDescrption,
+    selfDescription,
     jobDescription,
   });
 
   const interviewReport = {
     user: req.user._id,
     resume: resumeContent.text,
-    selfDescrption,
+    selfDescription,
     jobDescription,
     ...interReportByAi,
   };
-  res.status(201).json(interviewReport);
+  res.status(201).json({
+    message: "Interview report generated successfully",
+    data: interviewReport,
+  });
 }
 
 module.exports = {

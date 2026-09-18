@@ -1,6 +1,6 @@
 const jwt = require("jsonwebtoken");
 
-function authUser(req, res, next) {
+async function authUser(req, res, next) {
   const token = req.cookies.token;
   if (!token) {
     return res.status(401).json({ message: "Token Not provided" });
@@ -15,4 +15,4 @@ function authUser(req, res, next) {
   }
 }
 
-module.exports = authUser;
+module.exports = { authUser };
