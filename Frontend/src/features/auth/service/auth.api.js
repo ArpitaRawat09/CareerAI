@@ -13,6 +13,7 @@ export async function register({ username, email, password }) {
       password,
     });
 
+    // return response data
     return response.data;
   } catch (err) {
     console.log(err);
@@ -44,10 +45,10 @@ export async function logout() {
 
 export async function getMe() {
   try {
+    
     const response = await api.get("/api/auth/get-me");
-    // console.log("response from getMe", response.data);
-
     return response.data;
+
   } catch (err) {
     console.log(err);
   }

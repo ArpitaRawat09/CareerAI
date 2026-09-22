@@ -2,7 +2,7 @@ const { Router } = require("express");
 const authController = require("../controllers/auth.controller.js");
 const authMiddleware = require("../middlewares/auth.middleware.js");
 
-const authRouter = Router();
+const authRouter = Router();  
 
 /**
  * @route POST /api/auth/register
@@ -12,8 +12,8 @@ const authRouter = Router();
 authRouter.post("/register", authController.registerUser);
 /**
  * @route POST /api/auth/login
- * @desc Login a user
- * @access Public
+ * @desc Login a user with email and password 
+ * @access Public 
  */
 authRouter.post("/login", authController.loginUser);
 /**

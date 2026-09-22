@@ -21,7 +21,7 @@ const technicalQuestionSchema = new mongoose.Schema({
 const behavioralQuestionSchema = new mongoose.Schema({
     question: {
         type: String,
-        required: [ true, "Technical question is required" ]
+        required: [ true, "Behavioral question is required" ]
     },
     intention: {
         type: String,
@@ -42,6 +42,7 @@ const skillGapSchema = new mongoose.Schema({
     },
     severity: {
         type: String,
+        // The severity of the skill gap
         enum: [ "low", "medium", "high" ],
         required: [ true, "Severity is required" ]
     }

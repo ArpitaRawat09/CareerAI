@@ -14,7 +14,7 @@ async function registerUser(req, res) {
 
   if (!username || !email || !password) {
     return res.status(400).json({ message: "All fields are required" });
-  }
+  } 
 
   const isUserAlreadyExists = await userModel.findOne({
     $or: [{ username }, { email }],
@@ -30,12 +30,15 @@ async function registerUser(req, res) {
   }
 
   const hashedPassword = await bcrypt.hash(password, 10);
+
+  // Create a new user in the database
   const user = await userModel.create({
     username,
     email,
     password: hashedPassword,
   });
-
+  
+  // Generate a JWT token and set it in the cookie
   const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
     expiresIn: "1d",
   });
@@ -82,6 +85,7 @@ async function loginUser(req, res) {
     return res.status(400).json({ message: "Invalid email or password" });
   }
 
+  // Generate a JWT token and set it in the cookie
   const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
     expiresIn: "1d",
   });
@@ -136,8 +140,9 @@ async function logoutUser(req, res) {
  */
 
 async function getMeController(req, res) {
+
+  // Fetch the user details from the database using the user ID
   const user = await userModel.findById(req.user.id);
-  // console.log("user from getMeController", user);
 
   res.status(200).json({
     message: "User details fetched successfully",

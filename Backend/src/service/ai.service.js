@@ -83,8 +83,9 @@ const interviewReportSchema = z.object({
           ),
       }),
     )
+    .min(7)
     .describe(
-      "A day-wise preparation plan for the candidate to follow in order to prepare for the interview effectively",
+      "A day-wise preparation plan for the candidate to follow in order to prepare for the interview effectively. Must contain at least 7 days.",
     ),
   title: z
     .string()
@@ -98,21 +99,75 @@ async function generateInterviewReport({
   selfDescription,
   jobDescription,
 }) {
-  const prompt = `Generate an interview report for a candidate with the following details:
-                        Resume: ${resume}
-                        Self Description: ${selfDescription}
-                        Job Description: ${jobDescription}
+  const prompt = `
+You are an expert technical recruiter and interviewer.
+
+Your task is to analyze the candidate profile against the job description and generate a structured interview report.
+
+Return ONLY valid JSON matching this exact schema:
+{
+  "matchScore": number,
+  "technicalQuestions": [
+    {
+      "question": string,
+      "intention": string,
+      "answer": string
+    }
+  ],
+  "behavioralQuestions": [
+    {
+      "question": string,
+      "intention": string,
+      "answer": string
+    }
+  ],
+  "skillGaps": [
+    {
+      "skill": string,
+      "severity": "low" | "medium" | "high"
+    }
+  ],
+  "preparationPlan": [
+    {
+      "day": number,
+      "focus": string,
+      "tasks": [string]
+    }
+  ],
+  "title": string
+}
+
+Important rules:
+1. Return only JSON. No markdown, no explanation, no extra fields, no wrapper object.
+2. Do not include keys like "message", "data", "resume", "candidate_information", "selfDescription", or any other extra field.
+3. The response must follow the schema exactly.
+4. Evaluate the candidate based only on the provided resume, self description, and job description.
+5. "matchScore" must be a number between 0 and 100.
+6. "title" should be the job title.
+7. For technicalQuestions and behavioralQuestions, create realistic interview questions, each with its intention and a good answer strategy.
+8. For skillGaps, identify real gaps between candidate profile and job requirements.
+9. For preparationPlan, create an actionable day-wise plan with realistic tasks.
+10. The preparationPlan must contain at least 7 distinct days. Prefer 7 to 10 days unless the job description clearly requires more.
+11. Ensure valid JSON syntax with double quotes around keys and string values.
+
+Candidate Resume:
+${resume}
+
+Self Description:
+${selfDescription}
+
+Job Description:
+${jobDescription}
 `;
 
   const response = await ai.models.generateContent({
-    model: "gemini-3-flash-preview",
+    model: "gemini-3.5-flash-lite",
     contents: prompt,
     config: {
       responseMimeType: "application/json",
       responseSchema: zodToJsonSchema(interviewReportSchema),
     },
   });
-
   return JSON.parse(response.text);
 }
 
@@ -174,4 +229,4 @@ async function generateInterviewReport({
 //   return pdfBuffer;
 // }
 
-module.exports = { generateInterviewReport};
+module.exports = { generateInterviewReport };
