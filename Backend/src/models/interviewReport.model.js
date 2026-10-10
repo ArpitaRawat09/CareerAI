@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const { optional } = require('zod');
 
 
 const technicalQuestionSchema = new mongoose.Schema({
@@ -91,7 +92,7 @@ const interviewReportSchema = new mongoose.Schema({
     },
     title: {
         type: String,
-        required: [ true, "Job title is required" ]
+        optional: true,
     }
 }, {
     timestamps: true
