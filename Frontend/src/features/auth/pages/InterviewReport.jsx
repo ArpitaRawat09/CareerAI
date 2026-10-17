@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { Link, useLocation, useNavigate } from "react-router";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
 import "../dashBoard.scss";
 import "../interview.scss";
@@ -81,6 +81,5 @@ const InterviewReport = () => {
 };
 
 export default InterviewReport;
-
 
 

@@ -1,11 +1,12 @@
 import { useState } from "react";
 import axios from "axios";
-import { Link, useNavigate } from "react-router";
+import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
 import "../dashBoard.scss";
 import "../interview.scss";
 
 const initialForm = { selfDescription: "", jobDescription: "" };
+const MAX_RESUME_SIZE = 3 * 1024 * 1024;
 
 const Interview = () => {
 	const navigate = useNavigate();
@@ -52,6 +53,19 @@ const Interview = () => {
 		navigate("/login");
 	};
 
+	const handleResumeChange = (event) => {
+		const selectedResume = event.target.files?.[0] || null;
+		if (selectedResume && selectedResume.size > MAX_RESUME_SIZE) {
+			setResume(null);
+			setError("Your resume must be 3MB or smaller.");
+			event.target.value = "";
+			return;
+		}
+
+		setError("");
+		setResume(selectedResume);
+	};
+
 	const displayName = user?.username || user?.email?.split("@")[0] || "there";
 	const initials = displayName.slice(0, 2).toUpperCase();
 
@@ -76,7 +90,7 @@ const Interview = () => {
 				<section className="workspace-card interview-page__card">
 					<div className="card-heading"><div><p className="section-kicker">Step 01</p><h2>Tell us about the role</h2></div><span className="step-count">1 / 1</span></div>
 					<form className="interview-form" onSubmit={handleSubmit}>
-						<label className="resume-dropzone" htmlFor="interview-resume"><span className="resume-dropzone__icon" aria-hidden="true">&#8593;</span><span><strong>{resume ? resume.name : "Upload your resume"}</strong><small>{resume ? "Ready to analyze" : "PDF format, up to 10MB"}</small></span><span className="resume-dropzone__action">Browse</span><input id="interview-resume" type="file" accept="application/pdf" onChange={(event) => setResume(event.target.files?.[0] || null)} /></label>
+						<label className="resume-dropzone" htmlFor="interview-resume"><span className="resume-dropzone__icon" aria-hidden="true">&#8593;</span><span><strong>{resume ? resume.name : "Upload your resume"}</strong><small>{resume ? "Ready to analyze" : "PDF format, up to 3MB"}</small></span><span className="resume-dropzone__action">Browse</span><input id="interview-resume" type="file" accept="application/pdf" onChange={handleResumeChange} /></label>
 						<label className="field-label" htmlFor="interview-self-description">Tell us about yourself <span>Optional</span></label>
 						<textarea id="interview-self-description" name="selfDescription" value={form.selfDescription} onChange={updateField} placeholder="A quick summary of your experience, strengths, or goals" rows="4" />
 						<label className="field-label" htmlFor="interview-job-description">Job description</label>
