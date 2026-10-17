@@ -2,7 +2,7 @@ const pdfParse = require("pdf-parse");
 const path = require("path");
 const { pathToFileURL } = require("url");
 const { generateInterviewReport } = require("../service/ai.service.js");
-const interviewReportModel = require("../models/interviewReport.model");
+const interviewReportModel = require("../models/interviewReport.model.js");
 
 const standardFontDataUrl = pathToFileURL(
   path.join(path.dirname(require.resolve("pdfjs-dist")), "../standard_fonts/"),

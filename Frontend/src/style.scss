@@ -1,15 +1,18 @@
 @use "./styles/button.scss";
 
 * {
-  margin: 0%;
-  padding: 0%;
+  margin: 0;
+  padding: 0;
   box-sizing: border-box;
 }
+
 html,
 body,
-#root{
+#root {
   width: 100%;
-  font-family: "Poppins", sans-serif;
-  background-color: #1b1b1b;
-  color: #dedada;
+  min-height: 100%;
+  overflow-x: hidden;
+  font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background: #f7f8fc;
+  color: #126b67;
 }
