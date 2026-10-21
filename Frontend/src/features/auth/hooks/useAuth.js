@@ -1,6 +1,6 @@
 import { useContext, useEffect } from "react";
 import { getMe, login, logout, register } from "../service/auth.api";
-import { AuthContext } from "../service/auth.context";
+import { AuthContext } from "../auth.context";
 
 export const useAuth = () => {
   const context = useContext(AuthContext);

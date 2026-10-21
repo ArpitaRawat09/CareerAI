@@ -1,6 +1,6 @@
 import { useState } from "react";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
 import "../dashBoard.scss";
 
@@ -57,10 +57,10 @@ const Dashboard = () => {
 				<div className="brand-mark" aria-label="CareerAI home"><span className="brand-mark__icon">C</span><span>CareerAI</span></div>
 				<nav className="dashboard-nav" aria-label="Dashboard navigation">
 					<a className="dashboard-nav__link dashboard-nav__link--active" href="#overview"><span aria-hidden="true">&#9632;</span> Overview</a>
-					<a className="dashboard-nav__link" href="/interview"><span aria-hidden="true">+</span> New interview</a>
+					<Link className="dashboard-nav__link" to="/interview"><span aria-hidden="true">+</span> New interview</Link>
 					<div className="dashboard-nav__section">
 						<span className="dashboard-nav__label">Your library</span>
-						<a className="dashboard-nav__link" href="/interview/report"><span aria-hidden="true">&#9776;</span> Interview reports</a>
+						<Link className="dashboard-nav__link" to="/interview/report"><span aria-hidden="true">&#9776;</span> Interview reports</Link>
 					</div>
 				</nav>
 				<div className="sidebar-note"><span className="sidebar-note__eyebrow">Your next step</span><strong>Turn your experience into a sharper interview.</strong><a href="#new-interview">Start preparing <span aria-hidden="true">&#8594;</span></a></div>

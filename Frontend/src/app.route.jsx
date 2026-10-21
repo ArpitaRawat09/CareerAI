@@ -3,8 +3,8 @@ import Login from "./features/auth/pages/Login";
 import Register from "./features/auth/pages/Register";
 import ProtectedRoute from "./features/auth/components/Protected";
 import Dashboard from "./features/auth/pages/DashBoard";
-import Interview from "./features/auth/pages/Interview";
-import InterviewReport from "./features/auth/pages/InterviewReport";
+import Interview from "./features/interview/pages/Interview";
+import InterviewReport from "./features/interview/pages/InterviewReport";
 
 export const router = createBrowserRouter([
   {

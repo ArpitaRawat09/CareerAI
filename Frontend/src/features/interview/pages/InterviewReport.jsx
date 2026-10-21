@@ -1,9 +1,9 @@
 import { useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { useAuth } from "../hooks/useAuth";
-import "../dashBoard.scss";
-import "../interview.scss";
-import "../interviewReport.scss";
+import { useAuth } from "../../auth/hooks/useAuth";
+import "../../auth/dashBoard.scss";
+import "../styles/interview.scss";
+import "../styles/interviewReport.scss";
 
 const getStoredReport = () => {
 	try {
@@ -81,5 +81,3 @@ const InterviewReport = () => {
 };
 
 export default InterviewReport;
-
-

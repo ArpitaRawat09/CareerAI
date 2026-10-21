@@ -1,9 +1,9 @@
 import { useState } from "react";
 import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
-import { useAuth } from "../hooks/useAuth";
-import "../dashBoard.scss";
-import "../interview.scss";
+import { useAuth } from "../../auth/hooks/useAuth";
+import "../../auth/dashBoard.scss";
+import "../styles/interview.scss";
 
 const initialForm = { selfDescription: "", jobDescription: "" };
 const MAX_RESUME_SIZE = 3 * 1024 * 1024;
