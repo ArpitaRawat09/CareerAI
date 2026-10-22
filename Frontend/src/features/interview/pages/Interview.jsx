@@ -1,7 +1,7 @@
 import { useState } from "react";
-import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../auth/hooks/useAuth";
+import { useInterview } from "../hooks/useInterview";
 import "../../auth/dashBoard.scss";
 import "../styles/interview.scss";
 
@@ -11,11 +11,10 @@ const MAX_RESUME_SIZE = 3 * 1024 * 1024;
 const Interview = () => {
 	const navigate = useNavigate();
 	const { user, handleLogout } = useAuth();
+	const { generateReport, loading, error, report } = useInterview();
 	const [form, setForm] = useState(initialForm);
 	const [resume, setResume] = useState(null);
-	const [isSubmitting, setIsSubmitting] = useState(false);
-	const [error, setError] = useState("");
-	const [report, setReport] = useState(null);
+	const [fileError, setFileError] = useState("");
 
 	const updateField = (event) => {
 		setForm((currentForm) => ({ ...currentForm, [event.target.name]: event.target.value }));
@@ -24,27 +23,13 @@ const Interview = () => {
 	const handleSubmit = async (event) => {
 		event.preventDefault();
 		if (!resume) {
-			setError("Please attach your resume to continue.");
+			setFileError("Please attach your resume to continue.");
 			return;
 		}
-
-		setError("");
-		setReport(null);
-		setIsSubmitting(true);
-		const payload = new FormData();
-		payload.append("resume", resume);
-		payload.append("selfDescription", form.selfDescription);
-		payload.append("jobDescription", form.jobDescription);
-
-		try {
-			const response = await axios.post("http://localhost:3000/api/interview", payload, { withCredentials: true });
-			setReport(response.data.data);
-			sessionStorage.setItem("careerai:last-report", JSON.stringify(response.data.data));
-			navigate("/interview/report", { state: { report: response.data.data } });
-		} catch (requestError) {
-			setError(requestError.response?.data?.message || "We could not generate your report. Please try again.");
-		} finally {
-			setIsSubmitting(false);
+		setFileError("");
+		const generatedReport = await generateReport({ ...form, resumeFile: resume });
+		if (generatedReport?._id) {
+			navigate(`/interview/report/${generatedReport._id}`);
 		}
 	};
 
@@ -57,12 +42,12 @@ const Interview = () => {
 		const selectedResume = event.target.files?.[0] || null;
 		if (selectedResume && selectedResume.size > MAX_RESUME_SIZE) {
 			setResume(null);
-			setError("Your resume must be 3MB or smaller.");
 			event.target.value = "";
+			setFileError("Your resume must be 3MB or smaller.");
 			return;
 		}
 
-		setError("");
+		setFileError("");
 		setResume(selectedResume);
 	};
 
@@ -95,9 +80,9 @@ const Interview = () => {
 						<textarea id="interview-self-description" name="selfDescription" value={form.selfDescription} onChange={updateField} placeholder="A quick summary of your experience, strengths, or goals" rows="4" />
 						<label className="field-label" htmlFor="interview-job-description">Job description</label>
 						<textarea id="interview-job-description" name="jobDescription" value={form.jobDescription} onChange={updateField} placeholder="Paste the role description you are preparing for" rows="8" required />
-						{error && <p className="form-message form-message--error" role="alert">{error}</p>}
 						{report && <p className="form-message form-message--success" role="status">Your report is ready. Match score: {report.matchScore ?? "Pending"}%</p>}
-						<button className="button primary-button interview-form__submit" type="submit" disabled={isSubmitting}>{isSubmitting ? "Generating report..." : "Generate interview report"}<span aria-hidden="true">&#8594;</span></button>
+						{(fileError || error) && <p className="form-message form-message--error" role="alert">{fileError || error}</p>}
+						<button className="button primary-button interview-form__submit" type="submit" disabled={loading}>{loading ? "Generating report..." : "Generate interview report"}<span aria-hidden="true">&#8594;</span></button>
 					</form>
 				</section>
 			</main>

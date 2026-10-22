@@ -3,6 +3,9 @@
 .report-page__content { display: block; width: min(1120px, calc(100% - 48px)); min-width: 0; height: auto; margin: 0 auto; padding: 38px 0 70px; }
 .report-page__topline { display: flex; justify-content: space-between; align-items: center; gap: 20px; }
 .report-page__status { padding: 7px 11px; border-radius: 20px; color: #277258; background: #d9eee7; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .8px; }
+.report-page__topline > div { display: flex; align-items: center; gap: 10px; }
+.report-download { padding: 7px 11px; border: 1px solid #b9d5ce; border-radius: 20px; color: #126b67; background: #fff; font: inherit; font-size: 10px; cursor: pointer; }
+.report-library { margin-top: 36px; }.report-library h1 { margin: 8px 0 24px; font-size: clamp(28px, 4vw, 44px); letter-spacing: -1.5px; }.report-list { display: grid; gap: 10px; }.report-list__item { display: flex; justify-content: space-between; align-items: center; gap: 16px; padding: 17px; border-radius: 8px; color: #172b3a; background: #f4f9f7; text-decoration: none; }.report-list__item strong, .report-list__item small { display: block; }.report-list__item strong { font-size: 13px; }.report-list__item small { margin-top: 6px; color: #6b7a83; font-size: 11px; }.report-list__item > span { color: #126b67; font-size: 18px; }
 .report-hero { display: flex; justify-content: space-between; align-items: center; gap: 30px; margin: 36px 0 28px; padding: 34px 38px; border-radius: 12px; background: #d9eee7; }
 .report-hero > div:first-child { min-width: 0; }.report-hero h1 { max-width: 680px; margin: 10px 0; overflow-wrap: anywhere; font-size: clamp(28px, 4vw, 46px); letter-spacing: -1.8px; line-height: 1.05; }
 .report-hero p:last-child { color: #55716e; font-size: 13px; line-height: 1.5; }

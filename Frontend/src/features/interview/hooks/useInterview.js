@@ -1,4 +1,4 @@
-import { getAllInterviewReports, generateInterviewReport, getInterviewReportById, generateResumePdf } from "../services/interview.api"
+import { getAllInterviewReports, generateInterviewReport, getInterviewReportById, generateResumePdf } from "../service/interview.api"
 import { useContext, useEffect } from "react"
 import { InterviewContext } from "../interview.context"
 import { useParams } from "react-router"
@@ -13,57 +13,60 @@ export const useInterview = () => {
         throw new Error("useInterview must be used within an InterviewProvider")
     }
 
-    const { loading, setLoading, report, setReport, reports, setReports } = context
+    const { loading, setLoading, error, setError, report, setReport, reports, setReports } = context
 
     const generateReport = async ({ jobDescription, selfDescription, resumeFile }) => {
         setLoading(true)
-        let response = null
         try {
-            response = await generateInterviewReport({ jobDescription, selfDescription, resumeFile })
-            setReport(response.interviewReport)
+            setError("")
+            const response = await generateInterviewReport({ jobDescription, selfDescription, resumeFile })
+            const generatedReport = response.data || response.interviewReport
+            setReport(generatedReport)
+            return generatedReport
         } catch (error) {
-            console.log(error)
+            setError(error.response?.data?.message || "We could not generate your report. Please try again.")
         } finally {
             setLoading(false)
         }
-
-        return response.interviewReport
+        return null
     }
 
     const getReportById = async (interviewId) => {
         setLoading(true)
-        let response = null
         try {
-            response = await getInterviewReportById(interviewId)
-            setReport(response.interviewReport)
+            setError("")
+            const response = await getInterviewReportById(interviewId)
+            const loadedReport = response.data || response.interviewReport
+            setReport(loadedReport)
+            return loadedReport
         } catch (error) {
-            console.log(error)
+            setError(error.response?.data?.message || "We could not load this report.")
         } finally {
             setLoading(false)
         }
-        return response.interviewReport
+        return null
     }
 
     const getReports = async () => {
         setLoading(true)
-        let response = null
         try {
-            response = await getAllInterviewReports()
-            setReports(response.interviewReports)
+            setError("")
+            const response = await getAllInterviewReports()
+            const loadedReports = response.data || response.interviewReports || []
+            setReports(loadedReports)
+            return loadedReports
         } catch (error) {
-            console.log(error)
+            setError(error.response?.data?.message || "We could not load your interview reports.")
         } finally {
             setLoading(false)
         }
-
-        return response.interviewReports
+        return []
     }
 
     const getResumePdf = async (interviewReportId) => {
         setLoading(true)
-        let response = null
         try {
-            response = await generateResumePdf({ interviewReportId })
+            const response = await generateResumePdf({ interviewReportId })
             const url = window.URL.createObjectURL(new Blob([ response ], { type: "application/pdf" }))
             const link = document.createElement("a")
             link.href = url
@@ -72,7 +75,7 @@ export const useInterview = () => {
             link.click()
         }
         catch (error) {
-            console.log(error)
+            setError(error.response?.data?.message || "We could not download the preparation PDF.")
         } finally {
             setLoading(false)
         }
@@ -86,6 +89,6 @@ export const useInterview = () => {
         }
     }, [ interviewId ])
 
-    return { loading, report, reports, generateReport, getReportById, getReports, getResumePdf }
+    return { loading, error, report, reports, generateReport, getReportById, getReports, getResumePdf }
 
 }

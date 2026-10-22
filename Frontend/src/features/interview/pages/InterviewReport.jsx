@@ -1,32 +1,15 @@
-import { useEffect } from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { useAuth } from "../../auth/hooks/useAuth";
+import { useInterview } from "../hooks/useInterview";
 import "../../auth/dashBoard.scss";
 import "../styles/interview.scss";
 import "../styles/interviewReport.scss";
 
-const getStoredReport = () => {
-	try {
-		const storedReport = sessionStorage.getItem("careerai:last-report");
-		return storedReport ? JSON.parse(storedReport) : null;
-	} catch {
-		return null;
-	}
-};
-
 const InterviewReport = () => {
-	const location = useLocation();
 	const navigate = useNavigate();
 	const { user, handleLogout } = useAuth();
-	const report = location.state?.report || getStoredReport();
-
-	useEffect(() => {
-		if (!report) {
-			navigate("/interview", { replace: true });
-		}
-	}, [navigate, report]);
-
-	if (!report) return null;
+	const { interviewId } = useParams();
+	const { report, reports, loading, error, getResumePdf } = useInterview();
 
 	const handleSignOut = async () => {
 		await handleLogout();
@@ -35,6 +18,23 @@ const InterviewReport = () => {
 
 	const displayName = user?.username || user?.email?.split("@")[0] || "there";
 	const initials = displayName.slice(0, 2).toUpperCase();
+	if (!interviewId) {
+		return (
+			<div className="report-page">
+				<header className="report-page__header"><Link className="interview-page__brand" to="/"><span className="brand-mark__icon">C</span> CareerAI</Link><div className="interview-page__actions"><div className="profile-chip"><span className="profile-chip__avatar">{initials}</span><span className="profile-chip__details"><strong>{displayName}</strong><small>Active candidate</small></span></div><button type="button" onClick={handleSignOut}>Sign out</button></div></header>
+				<main className="report-page__content">
+					<div className="report-page__topline"><Link className="interview-page__back" to="/interview">&#8592; New interview</Link></div>
+					<section className="report-section report-library"><p className="section-kicker">Your library</p><h1>Interview reports</h1>
+						{error && <p className="form-message form-message--error" role="alert">{error}</p>}
+						{loading ? <p className="report-empty">Loading reports...</p> : reports.length === 0 ? <p className="report-empty">No interview reports yet. Start a new interview to build one.</p> : <div className="report-list">{reports.map((item) => <Link className="report-list__item" to={`/interview/report/${item._id}`} key={item._id}><div><strong>{item.title || "Interview preparation plan"}</strong><small>{new Date(item.createdAt).toLocaleDateString()} · Match score {item.matchScore ?? "N/A"}%</small></div><span aria-hidden="true">&#8594;</span></Link>)}</div>}
+					</section>
+				</main>
+			</div>
+		);
+	}
+
+	if (loading && !report) return <main className="report-page__content"><p className="report-empty">Loading report...</p></main>;
+	if (!report) return <main className="report-page__content"><p className="form-message form-message--error" role="alert">{error || "Report not found."}</p></main>;
 	const technicalQuestions = report.technicalQuestions || [];
 	const behavioralQuestions = report.behavioralQuestions || [];
 	const skillGaps = report.skillGaps || [];
@@ -48,7 +48,7 @@ const InterviewReport = () => {
 			</header>
 
 			<main className="report-page__content">
-				<div className="report-page__topline"><Link className="interview-page__back" to="/interview">&#8592; New interview</Link><span className="report-page__status">Report generated</span></div>
+				<div className="report-page__topline"><Link className="interview-page__back" to="/interview">&#8592; New interview</Link><div><button className="report-download" type="button" onClick={() => getResumePdf(report._id)}>Download PDF</button><span className="report-page__status">Report generated</span></div></div>
 				<section className="report-hero">
 					<div><p className="section-kicker">Interview report</p><h1>{report.title || "Your interview preparation plan"}</h1><p>Here is your tailored preparation guide based on your resume and target role.</p></div>
 					<div className="match-score"><strong>{report.matchScore ?? "--"}</strong><span>/ 100 match</span></div>
