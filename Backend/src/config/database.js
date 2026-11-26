@@ -6,9 +6,8 @@ async function connectDB() {
     console.log("Connected to MongoDB");
   } catch (error) {
     console.error("Error connecting to MongoDB:", error);
+    throw error;
   }
 }
 
 module.exports = connectDB;
-
-// mongodb+srv://arpitarawat381_db_user:flWO1bUhuGacgLbZ@careerai-cluster.f2shmq7.mongodb.net/

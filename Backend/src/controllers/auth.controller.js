@@ -1,7 +1,7 @@
-import userModel from "../models/user.model.js";
-import bcrypt from "bcryptjs";
-import jwt from "jsonwebtoken";
-import redis from "../config/redis.js";
+const userModel = require("../models/user.model.js");
+const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
+const redis = require("../config/redis.js");
 
 /**
  * @name registerUserController
@@ -14,7 +14,7 @@ async function registerUser(req, res) {
 
   if (!username || !email || !password) {
     return res.status(400).json({ message: "All fields are required" });
-  } 
+  }
 
   const isUserAlreadyExists = await userModel.findOne({
     $or: [{ username }, { email }],
@@ -37,7 +37,7 @@ async function registerUser(req, res) {
     email,
     password: hashedPassword,
   });
-  
+
   // Generate a JWT token and set it in the cookie
   const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
     expiresIn: "1d",
@@ -45,11 +45,11 @@ async function registerUser(req, res) {
 
   res.cookie("token", token, {
     httpOnly: true,
-    secure: false,
-    sameSite: "lax",
+    secure: process.env.NODE_ENV === "production",
+    sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
     maxAge: 24 * 60 * 60 * 1000,
   });
-  
+
   res.status(201).json({
     message: "User registered successfully",
     user: {
@@ -92,8 +92,8 @@ async function loginUser(req, res) {
 
   res.cookie("token", token, {
     httpOnly: true,
-    secure: false,
-    sameSite: "lax",
+    secure: process.env.NODE_ENV === "production",
+    sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
     maxAge: 24 * 60 * 60 * 1000,
   });
   res.status(200).json({
@@ -140,7 +140,6 @@ async function logoutUser(req, res) {
  */
 
 async function getMeController(req, res) {
-
   // Fetch the user details from the database using the user ID
   const user = await userModel.findById(req.user.id);
 
@@ -154,7 +153,7 @@ async function getMeController(req, res) {
   });
 }
 
-export {
+module.exports = {
   registerUser,
   loginUser,
   logoutUser,
